@@ -12,13 +12,11 @@ from dotenv import load_dotenv
 from telegram.ext import (
     filters,
     MessageHandler,
-    ApplicationBuilder,
+    Updater,
     ContextTypes,
     CommandHandler,
-    InlineQueryHandler
+    InlineQueryHandler, Filters, CallbackContext
 )
-from PIL import Image
-from io import BytesIO
 
 load_dotenv()
 
@@ -36,7 +34,7 @@ logging.basicConfig(
 )
 
 
-async def get_screenshot(update, context):
+def get_screenshot(update, context):
     now = time()
     date = strftime("%m%d%y")
     user_id = str(update.message.from_user.id)
@@ -51,16 +49,15 @@ async def get_screenshot(update, context):
         return file_path, time_used, requested_website
 
 
-async def shot(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg = await context.bot.send_photo(chat_id=update.effective_chat.id,
-                                       caption='Это будет непросто, но '
-                                               'я постараюсь. Наберись '
-                                               'терпения...',
-                                       photo=open('waiting.jpg', 'rb'))
-    file_path, time_used, requested_website = await get_screenshot(update,
-                                                                   context)
+def shot(update: Update, context: CallbackContext):
+    msg = context.bot.send_photo(chat_id=update.effective_chat.id,
+                                 caption='Это будет непросто, но '
+                                         'я постараюсь. Наберись '
+                                         'терпения...',
+                                 photo=open('waiting.jpg', 'rb'))
+    file_path, time_used, requested_website = get_screenshot(update, context)
 
-    await context.bot.edit_message_media(
+    context.bot.edit_message_media(
         chat_id=msg.chat.id,
         message_id=msg.message_id,
         media=InputMediaPhoto(
@@ -70,7 +67,9 @@ async def shot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ))
 
 a = 'https://api.thumbnail.ws/api/YOUR-FREE-API-KEY/thumbnail/get?url=https://www.google.com/&width=640'
-async def inline_shot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+
+def inline_shot(update: Update, context: CallbackContext):
     query = update.inline_query.query
     if not query:
         return
@@ -84,32 +83,31 @@ async def inline_shot(update: Update, context: ContextTypes.DEFAULT_TYPE):
             photo_url=f'https://api.thumbnail.ws/api/abfbe1c38573e86ce4544bd3e3e79da9f1bf7d354ea3/thumbnail/get?url=https://{query}/&width=640'
         )
     )
-    await context.bot.answer_inline_query(update.inline_query.id, results)
+    context.bot.answer_inline_query(update.inline_query.id, results)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id,
+def start(update: Update, context: CallbackContext):
+    context.bot.send_message(chat_id=update.effective_chat.id,
                                    text='Привет! Для получения скриншота '
                                         'пришли мне адрес сайта, например, '
                                         'mail.ru')
 
 
-async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id,
+def unknown(update: Update, context: CallbackContext):
+    context.bot.send_message(chat_id=update.effective_chat.id,
                                    text='Не похоже на адрес сайта, '
                                         'попробуй еще раз.')
 
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-    start_handler = CommandHandler('start', start)
-    shot_handler = MessageHandler(filters.Entity('url'), shot)
-    inline_shot_handler = InlineQueryHandler(inline_shot)
-    unknown_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), unknown)
+    updater = Updater(TELEGRAM_TOKEN)
 
-    application.add_handler(start_handler)
-    application.add_handler(shot_handler)
-    application.add_handler(inline_shot_handler)
-    application.add_handler(unknown_handler)
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(MessageHandler(Filters.entity('url'), shot))
+    updater.dispatcher.add_handler(
+        MessageHandler(Filters.text & (~Filters.command), unknown)
+    )
 
-    application.run_polling()
+    updater.start_polling()
+
+    updater.idle()
