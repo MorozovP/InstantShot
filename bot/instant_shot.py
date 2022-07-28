@@ -1,24 +1,17 @@
-import os, requests
-from time import strftime, time
 import logging
-from telegram import (
-    Update,
-    InputMediaPhoto,
-    InlineQueryResultPhoto
-)
+import os
+from time import strftime, time
+
+import requests
 from dotenv import load_dotenv
-from telegram.ext import (
-    MessageHandler,
-    Updater,
-    CommandHandler,
-    Filters,
-    CallbackContext, InlineQueryHandler
-)
+from telegram import InlineQueryResultPhoto, InputMediaPhoto, Update
+from telegram.ext import (CallbackContext, CommandHandler, Filters,
+                          InlineQueryHandler, MessageHandler, Updater)
 
 load_dotenv()
 
 MEDIA = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'media/'
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'app/media/'
 )
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 THUMBNAIL_TOKEN = os.getenv('THUMBNAIL_TOKEN')
@@ -56,15 +49,10 @@ def get_screenshot(update):
 
 def shot(update: Update, context: CallbackContext):
     with requests.get(url=f'{DB_API_URL}message/wait') as r:
-        print('-' * 50)
-        print(r)
-        print('-' * 50)
-        print(r.json())
-        print('-' * 50)
         msg = context.bot.send_photo(
             chat_id=update.effective_chat.id,
             caption=r.json().get('text'),
-            photo=open('waiting.jpg', 'rb')
+            photo=open(f'{MEDIA}waiting.jpg', 'rb')
         )
     time_used, requested_website, url = get_screenshot(update)
     bot_user_id = update.message.from_user.id
@@ -103,7 +91,6 @@ def inline_shot(update: Update, context: CallbackContext):
 
 
 def start(update: Update, context: CallbackContext):
-    # add bot user info to db
     bot_user = update.message.from_user.to_dict()
     requests.post(url=f'{DB_API_URL}user/', json=bot_user)
     with requests.get(url=f'{DB_API_URL}message/start') as r:

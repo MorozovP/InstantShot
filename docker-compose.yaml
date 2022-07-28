@@ -3,7 +3,7 @@ services:
 
 
   bot:
-    build: ./bot/
+    image: morozovp/bot:latest
     restart: always
     volumes:
       - media_value:/app/media/
@@ -18,7 +18,7 @@ services:
       - .env
 
   db-api:
-    build: ./db_api/
+    image: morozovp/db-api:latest
     restart: always
     volumes:
       - static_value:/app/static/

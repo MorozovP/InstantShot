@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Message, BotUser, BotUserRequest
+
+from .models import BotUser, BotUserRequest, Message
 
 
 @admin.register(Message)

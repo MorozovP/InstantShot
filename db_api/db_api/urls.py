@@ -1,8 +1,6 @@
+from api.views import BotUserDetail, BotUserRequestDetail, MessageDetail
 from django.contrib import admin
 from django.urls import path
-
-from api.views import MessageDetail, BotUserDetail, BotUserRequestDetail
-
 
 urlpatterns = [
     path('api/message/<pk>', MessageDetail.as_view()),

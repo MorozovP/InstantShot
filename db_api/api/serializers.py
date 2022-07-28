@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Message, BotUser, BotUserRequest
+
+from .models import BotUser, BotUserRequest, Message
 
 
 class MessageSerializer(serializers.ModelSerializer):

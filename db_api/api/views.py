@@ -1,11 +1,8 @@
 from rest_framework import generics
 
-from .models import Message, BotUser, BotUserRequest
-from .serializers import (
-    MessageSerializer,
-    BotUserSerializer,
-    BotUserRequestSerializer
-)
+from .models import BotUser, BotUserRequest, Message
+from .serializers import (BotUserRequestSerializer, BotUserSerializer,
+                          MessageSerializer)
 
 
 class MessageDetail(generics.RetrieveAPIView):
