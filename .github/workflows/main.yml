@@ -41,11 +41,13 @@ jobs:
       - name: Push Bot to Docker Hub
         uses: docker/build-push-action@v2 
         with:
+          context: bot
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/bot:latest
       - name: Push Db-Api to Docker Hub
         uses: docker/build-push-action@v2
         with:
+          context: db-api
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/db-api:latest
                     
@@ -78,8 +80,8 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker login
             sudo docker compose up -d
-            sudo docker compose exec db-api python manage.py migrate
-            sudo docker compose exec db-api python manage.py collectstatic --noinput
+            sudo docker compose exec ${{ secrets.DOCKER_USERNAME }}/db-api python manage.py migrate
+            sudo docker compose exec ${{ secrets.DOCKER_USERNAME }}/db-api python manage.py collectstatic --noinput
           
   send_message:
     runs-on: ubuntu-latest
