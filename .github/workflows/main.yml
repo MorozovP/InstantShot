@@ -41,13 +41,13 @@ jobs:
       - name: Push Bot to Docker Hub
         uses: docker/build-push-action@v2 
         with:
-          context: ./bot
+          context: bot
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/bot:latest
       - name: Push Db_Api to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ./db_api
+          context: db_api
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/db-api:latest
                     
