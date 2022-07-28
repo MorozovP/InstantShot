@@ -18,7 +18,7 @@ jobs:
         python -m pip install --upgrade pip 
         pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-isort
         pip install -r bot/requirements.txt
-        pip install -r db_api/requirements.txt 
+        pip install -r db-api/requirements.txt 
 
     - name: Test with flake8
       run: |
@@ -44,7 +44,7 @@ jobs:
           context: bot
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/bot:latest
-      - name: Push Db_Api to Docker Hub
+      - name: Push Db-Api to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: db-api
