@@ -47,7 +47,7 @@ jobs:
       - name: Push Db_Api to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: db_api
+          context: db-api
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/db-api:latest
                     
