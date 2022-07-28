@@ -7,7 +7,7 @@ class Message(models.Model):
 
 
 class BotUser(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True)
     first_name = models.CharField(null=True, max_length=50)
     last_name = models.CharField(null=True, max_length=50)
     username = models.CharField(null=True, max_length=50)
