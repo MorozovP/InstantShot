@@ -6,9 +6,9 @@ from time import strftime, time
 
 import requests
 from dotenv import load_dotenv
-from telegram import InlineQueryResultPhoto, InputMediaPhoto, Update
+from telegram import InputMediaPhoto, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
-                          InlineQueryHandler, MessageHandler, Updater)
+                          MessageHandler, Updater)
 
 load_dotenv()
 
@@ -139,23 +139,6 @@ def answer(update: Update, context: CallbackContext) -> None:
         )
 
 
-def inline_answer(update: Update, context: CallbackContext) -> None:
-    query = update.inline_query.query
-    if not query:
-        return
-    results = []
-    time_used, requested_website, url = get_screenshot(update)
-    results.append(
-        InlineQueryResultPhoto(
-            id=query,
-            title=query,
-            thumb_url=url,
-            photo_url=url
-        )
-    )
-    context.bot.answer_inline_query(update.inline_query.id, results)
-
-
 def start(update: Update, context: CallbackContext) -> None:
     """
     По команде /start присылает сообщение с описанием функционала бота.
@@ -197,7 +180,6 @@ if __name__ == '__main__':
     updater.dispatcher.add_handler(
         MessageHandler(Filters.entity('url'), answer)
     )
-    updater.dispatcher.add_handler(InlineQueryHandler(inline_answer))
     updater.dispatcher.add_handler(
         MessageHandler(Filters.text & (~Filters.command), unknown)
     )
