@@ -6,8 +6,7 @@ from time import strftime, time
 
 import requests
 from dotenv import load_dotenv
-from telegram import (InlineQueryResultPhoto, InputMediaPhoto,
-                      ReplyKeyboardMarkup, Update)
+from telegram import InlineQueryResultPhoto, InputMediaPhoto, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           InlineQueryHandler, MessageHandler, Updater)
 
