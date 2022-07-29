@@ -1,11 +1,13 @@
 import logging
 import os
+import re
 import sys
 from time import strftime, time
 
 import requests
 from dotenv import load_dotenv
-from telegram import InlineQueryResultPhoto, InputMediaPhoto, Update
+from telegram import (InlineQueryResultPhoto, InputMediaPhoto,
+                      ReplyKeyboardMarkup, Update)
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           InlineQueryHandler, MessageHandler, Updater)
 
@@ -77,6 +79,34 @@ def get_screenshot(update) -> tuple:
         return time_used, requested_website, url
 
 
+def get_title(update) -> str:
+    """Делает запрос к сайту и извлекает из ответа title."""
+    headers = {
+        "authority": "api.blocket.se",
+        "sec-ch-ua": '" Not A;Brand";v="99", "Chromium";v="98"',
+        "sec-ch-ua-mobile": "?0",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+        "sec-ch-ua-platform": "'Linux'",
+        "accept": "*/*",
+        "origin": "https://www.blocket.se",
+        "sec-fetch-site": "same-site",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-dest": "empty",
+        "referer": "https://www.blocket.se/",
+        "accept-language": "en-US,en;q=0.9"
+    }
+    requested_website = update.message.text
+    try:
+        n = requests.get(f'https://{requested_website}', headers=headers)
+    except Exception as error:
+        logging.info(logging_status['error'], error)
+        return requested_website
+    else:
+        logging.info(logging_status['success'])
+        return re.search('.*>(.*)</title', n.text, re.IGNORECASE).group(1)
+
+
 def answer(update: Update, context: CallbackContext) -> None:
     """
     В ответ на запрос пользователя присылает сообщение-заглушку, которую
@@ -98,12 +128,13 @@ def answer(update: Update, context: CallbackContext) -> None:
     data = {'bot_user_id': update.message.from_user.id,
             'requested_url': update.message.text}
     save_data(data)
+    title = get_title(update)
     with requests.get(url=f'{DB_API_URL}message/update') as r:
         context.bot.edit_message_media(
             chat_id=msg.chat.id,
             message_id=msg.message_id,
             media=InputMediaPhoto(media=url,
-                                  caption=f'{requested_website}, \n'
+                                  caption=f'{title}, \n'
                                           f'{r.json().get("text")} '
                                           f'{time_used}')
         )
