@@ -1,6 +1,6 @@
 python-dotenv==0.20.0
 asgiref==3.5.2
-django
+django==3.2
 sqlparse==0.4.2
 djangorestframework==3.13.1
 psycopg2-binary==2.9.3
