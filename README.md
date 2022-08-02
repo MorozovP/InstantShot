@@ -17,10 +17,7 @@ db-api, db, nginx.
 ```
 git clone git@github.com:MorozovP/InstantShot.git
 ```
-Заполните файл с переменными окружения по шаблону: /.env.example
-В шаблоне присутствует токен для работы с API thumbnail, ввиду наличия лимита
-количества обращений к API, данный токен может быть использован только с целью 
-тестирования.
+Заполните файл с переменными окружения по шаблону: /.env.example 
 
 Для запуска приложения в контейнерах перейдите в корневую директорию
 проекта и выполните следующие команды:
@@ -44,10 +41,4 @@ docker compose exec db-api python manage.py createsuperuser
 ```
 docker compose exec db-api python manage.py collectstatic --no-input
 ```
-- загрузите в базу данных предустановленные сообщения
 
-```
-docker compose exec db-api python manage.py loaddata dump.json
-```
-
-- При запуске проекта локально админ панель доступна по адресу http://localhost/admin
