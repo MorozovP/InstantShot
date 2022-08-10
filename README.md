@@ -6,11 +6,11 @@
 
 ### Технологии
 
-Бот выполнен с помощью библиотеки python-telegram-bot. Взаимодействие с бд 
-осуществляется посредством Django и Django REST API Framework. Подключена 
-админка Django. Используемая база данных - Postgres, сервер - Nginx. Настроен
-CI Github Actions с развертыванием проекта в четырех Docker - контейнерах: bot,
-db-api, db, nginx.
+Бот выполнен с помощью библиотеки aiogram. Скриншоты бот получает с помощью
+сервиса https://thumbnail.ws Взаимодействие с бд осуществляется посредством 
+Django и Django REST API Framework. Подключена админка Django. Используемая 
+база данных - Postgres, сервер - Nginx. Настроен CI Github Actions с развертыванием
+проекта в четырех Docker - контейнерах: bot, db-api, db, nginx.
 
 ### Установка
 Клонируйте репозиторий
@@ -50,6 +50,10 @@ docker compose exec db-api python manage.py collectstatic --no-input
 docker compose exec db-api python manage.py loaddata dump.json
 ```
 
+- Для чтения логов бота выполните команду:
+
+```
+sudo docker logs --follow instantshot-bot-1
+```
 - Войдите в админ панель http://localhost/admin и измените пароль предустановленного
 администратора (логин admin, пароль admin).
-
